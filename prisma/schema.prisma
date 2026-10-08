@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TransactionStatus {
+  aprovada
+  recusada
+  cancelada
+}
+
+enum TransactionMethods {
+  credito
+  debito
+}
+
+enum RiskLevel {
+  nenhum
+  baixo
+  medio
+  alto
+}
+
+model Mcc{
+  id Int @id @default(autoincrement())
+  mcc Int
+  description String @map("descricao")
+
+  clients Client[]
+
+  @@map("mcc")
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+  legalName String @map("nome_fantasia")
+  document String @map("cnpj")
+  mcc Mcc @relation(fields: [mcc_id], references: [id])
+  mcc_id Int
+
+  transactions Transaction[]
+  @@map("cliente")
+
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  client Client @relation(fields: [client_id], references: [id])
+  client_id Int @map("cliente_id")
+  amount Decimal @map("valor")
+  date DateTime @default(now()) @map("data")
+  transactionMethod TransactionMethods @map("tipo_transacao")
+  installment Int @map("parcela")
+  tax Decimal @map("taxa")
+  liquidAmount Decimal @map("valor_liquido")
+  status TransactionStatus
+  riskLevel RiskLevel @map("nivel_risco")
+
+  @@map("transacao")
+}

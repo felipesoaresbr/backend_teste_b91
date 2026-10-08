@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "transacao" ALTER COLUMN "data" SET DEFAULT CURRENT_TIMESTAMP;
